@@ -1,0 +1,48 @@
+//apply plugin: 'dagger.hilt.android.plugin'
+
+android {
+    compileSdkVersion rootProject.ext.android["compileSdkVersion"]
+    buildToolsVersion rootProject.ext.android["buildToolsVersion"]
+
+    viewBinding {
+        enabled = true
+    }
+
+    defaultConfig {
+        multiDexEnabled true
+        minSdkVersion rootProject.ext.android["minSdkVersion"]
+        targetSdkVersion rootProject.ext.android["targetSdkVersion"]
+        versionCode rootProject.ext.android["versionCode"]
+        versionName rootProject.ext.android["versionName"]
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [AROUTER_MODULE_NAME: project.getName()]
+            }
+        }
+    }
+    buildTypes {
+//        /**
+//         * 获取对应的`key`的gradle属性，
+//         */
+//        def projectProperties = { key -> "${project.properties.get(key)}"}
+
+        debug {
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+//            buildConfigField "Integer", "ENVIRONMENT_CONFIG", projectProperties("environmentDebug")
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        release {
+            buildConfigField "boolean", "LOG_DEBUG", "false"
+//            buildConfigField "Integer", "ENVIRONMENT_CONFIG", projectProperties("environmentRelease")
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}

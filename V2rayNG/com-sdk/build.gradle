@@ -1,0 +1,120 @@
+plugins {
+    id 'com.android.library'
+}
+
+apply from: "../component_build.gradle"
+
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+
+android {
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+
+    kotlinOptions{
+        jvmTarget = "1.8"
+    }
+
+    defaultConfig {
+
+        /**
+         * 获取对应的`environment`的gradle属性，
+         */
+        def environment = project.property("environment")
+        buildConfigField "String", "ENVIRONMENT_CONFIG", '"' + environment.toString() + '"'
+        println("project property environment: $environment")
+
+        /**
+         * dev         开发环境
+         * perView     预发环境
+         * online      生产环境
+         */
+        buildConfigField "String", "API_DEV", '"dev"'
+        buildConfigField "String", "API_RELEASE", '"release"'
+        buildConfigField "String", "API_ONLINE", '"online"'
+    }
+}
+
+dependencies {
+
+    api fileTree(include: '*.jar', dir: 'libs')
+    api project(':yq-net')
+
+    api rootProject.ext.dependencies["appcompat"]
+    api rootProject.ext.dependencies["material"]
+    api rootProject.ext.dependencies["constraintlayout"]
+    api rootProject.ext.dependencies["recyclerview"]
+
+    api(rootProject.ext.dependencies["rxkotlin"])
+    api(rootProject.ext.dependencies["rxandroid"])
+
+    api(rootProject.ext.dependencies["retrofit"])
+    api(rootProject.ext.dependencies["retrofit-converter-gson"])
+//    api(rootProject.ext.dependencies["retrofit-adapter"])
+    api(rootProject.ext.dependencies["okhttp3"])
+
+//    api rootProject.ext.dependencies["lifecycle-extensions"]
+
+//    api(rootProject.ext.dependencies["glide"])
+//    kapt rootProject.ext.dependencies["glideannotation"]
+//
+//    api rootProject.ext.dependencies["arouter"]
+//    kapt rootProject.ext.dependencies["arouter-compiler"]
+
+    api(rootProject.ext.dependencies["util-code"])
+
+    api rootProject.ext.dependencies["immersionbar"]
+
+//    api rootProject.ext.dependencies["smart-refresh-core"]
+//    api rootProject.ext.dependencies["smart-refresh-header"]
+//    api rootProject.ext.dependencies["smart-refresh-footer"]
+
+//    api rootProject.ext.dependencies["eventbus"]
+
+    api rootProject.ext.dependencies["aliyunOSS"]
+
+    api rootProject.ext.dependencies["rxpermission"]
+
+    api rootProject.ext.dependencies["luban"]
+
+    api rootProject.ext.dependencies["xpopup"]
+
+    api rootProject.ext.dependencies["pickerview"]
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+
+    api rootProject.ext.dependencies["viewmodel_ktx"]
+    api rootProject.ext.dependencies["lifecycle_ktx"]
+    api rootProject.ext.dependencies["livedata_ktx"]
+
+    api rootProject.ext.dependencies["bugly"]
+//    api rootProject.ext.dependencies["citypicker"]
+    api rootProject.ext.dependencies["jsbridge"]
+
+    api rootProject.ext.dependencies["coroutines"]
+
+//    api rootProject.ext.dependencies["room-runtime"]
+//    kapt rootProject.ext.dependencies["room-compiler"]
+    api rootProject.ext.dependencies["room-ktx"]
+    api rootProject.ext.dependencies["bigImageViewPager"]
+
+    api rootProject.ext.dependencies["liveDataBus"]
+
+    api rootProject.ext.dependencies["dataStore"]
+
+    /**
+     * 用于加载GIF图。姐姐Glide加载GIF动图导致内存和CPU上升问题
+     */
+    api rootProject.ext.dependencies["android-gif-drawable"]
+
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
+
+    api "androidx.datastore:datastore-preferences:1.0.0"
+}
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}

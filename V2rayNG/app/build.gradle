@@ -13,6 +13,10 @@ android {
         sourceCompatibility = "8"
     }
 
+    viewBinding {
+        enabled = true
+    }
+
     defaultConfig {
         applicationId "com.v2ray.ang"
         minSdkVersion 21
@@ -139,6 +143,8 @@ dependencies {
     implementation 'com.blacksquircle.ui:editorkit:2.1.1'
     implementation 'com.blacksquircle.ui:language-base:2.1.1'
     implementation 'com.blacksquircle.ui:language-json:2.1.1'
+
+    api project(':com-sdk')
 }
 
 buildscript {

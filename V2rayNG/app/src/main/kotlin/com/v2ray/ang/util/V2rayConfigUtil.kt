@@ -152,7 +152,10 @@ object V2rayConfigUtil {
             v2rayConfig.routing.domainStrategy = settingsStorage?.decodeString(AppConfig.PREF_ROUTING_DOMAIN_STRATEGY)
                     ?: "IPIfNonMatch"
             v2rayConfig.routing.domainMatcher = "mph"
-            val routingMode = settingsStorage?.decodeString(AppConfig.PREF_ROUTING_MODE) ?: ERoutingMode.GLOBAL_PROXY.value
+            /**
+             * 设置默认预定义规则为：绕过大陆地址而后代理
+             */
+            val routingMode = settingsStorage?.decodeString(AppConfig.PREF_ROUTING_MODE) ?: ERoutingMode.BYPASS_MAINLAND.value
 
             // Hardcode googleapis.cn
             val googleapisRoute = V2rayConfig.RoutingBean.RulesBean(

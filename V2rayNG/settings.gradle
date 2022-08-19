@@ -1,1 +1,3 @@
 include ':app'
+include ':yq-net'
+include ':com-sdk'

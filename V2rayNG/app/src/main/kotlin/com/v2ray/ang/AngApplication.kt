@@ -1,10 +1,10 @@
 package com.v2ray.ang
 
-import androidx.multidex.MultiDexApplication
 import androidx.preference.PreferenceManager
+import com.forest.bss.sdk.application.YqslApplication
 import com.tencent.mmkv.MMKV
 
-class AngApplication : MultiDexApplication() {
+class AngApplication : YqslApplication() {
     companion object {
         const val PREF_LAST_VERSION = "pref_last_version"
     }
