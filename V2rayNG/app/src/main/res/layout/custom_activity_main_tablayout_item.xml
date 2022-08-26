@@ -24,7 +24,7 @@
         android:layout_marginBottom="5dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:textColor="#ff0000"
+        android:textColor="#DDDDDD"
         app:layout_constraintTop_toBottomOf="@+id/tablayoutItemIcon"
         android:textSize="12sp"
         tools:text="工作台"/>

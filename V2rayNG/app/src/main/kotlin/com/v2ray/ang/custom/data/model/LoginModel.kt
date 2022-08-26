@@ -10,6 +10,7 @@ import com.forest.net.data.BaseResponse
 import com.v2ray.ang.custom.data.api.ApiService
 import com.v2ray.ang.custom.data.entity.UserInfoBean
 import com.v2ray.ang.custom.dataStore.UserInfoDataStore
+import com.v2ray.ang.custom.sign.PublicRequestParams
 import kotlinx.coroutines.launch
 
 /**
@@ -41,7 +42,10 @@ class LoginModel : ViewModel() {
 //                })
        viewModelScope.rxLaunch<BaseResponse<UserInfoBean>> {
            onRequest = {
-               App.obtainRetrofitService(ApiService::class.java).login(userName, passWord)
+               val mutableMap = mutableMapOf<String, String>()
+               mutableMap["username"] = userName
+               mutableMap["password"] = passWord
+               App.obtainRetrofitService(ApiService::class.java).login(PublicRequestParams.params(mutableMap))
            }
            onSuccess = {
                viewModelScope.launch {

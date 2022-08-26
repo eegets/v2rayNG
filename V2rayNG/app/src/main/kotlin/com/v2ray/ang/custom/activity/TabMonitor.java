@@ -22,7 +22,7 @@ import java.util.List;
 
 public class TabMonitor {
 
-    private int[] itemItemIcons = {R.mipmap.ic_launcher, R.mipmap.ic_launcher_foreground};
+    private int[] itemItemIcons = {R.drawable.tablayout_item_selector_0, R.drawable.tablayout_item_selector_1};
     private String[] tabItemTitles = {"加速", "我的"};
     private MainActivity activity;
     private TabLayout tabLayout;
@@ -120,9 +120,9 @@ public class TabMonitor {
         TextView tabLayoutItemText = view.findViewById(R.id.tablayoutItemText);
         ImageView tabLayoutItemIcon = view.findViewById(R.id.tablayoutItemIcon);
         if (isSelect) {
-            tabLayoutItemText.setTextColor(Color.parseColor("#ff0000"));
+            tabLayoutItemText.setTextColor(Color.parseColor("#339BFE"));
         } else {
-            tabLayoutItemText.setTextColor(Color.parseColor("#ff00ff"));
+            tabLayoutItemText.setTextColor(Color.parseColor("#DDDDDD"));
         }
         tabLayoutItemIcon.setSelected(isSelect);
     }

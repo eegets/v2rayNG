@@ -43,9 +43,12 @@ object PublicRequestParams {
         )
     }
 
-    suspend fun params(): MutableMap<String, String> {
+    suspend fun params(mutableMap: MutableMap<String, String> = mutableMapOf()): MutableMap<String, String> {
         var map = mutableMapOf<String, String>()
-        pair().apply {
+        pair().let {
+            it.putAll(mutableMap)
+            it
+        }.apply {
             this["sign"] = this.secretSign()
         }.let {
             logger {

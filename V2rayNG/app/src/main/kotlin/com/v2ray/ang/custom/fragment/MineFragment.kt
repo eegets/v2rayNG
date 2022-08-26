@@ -5,12 +5,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import com.forest.bss.sdk.base.frag.BaseFragment
 import com.v2ray.ang.R
 import com.v2ray.ang.custom.activity.BuyActivity
 import com.v2ray.ang.custom.activity.LoginActivity
 import com.v2ray.ang.custom.data.entity.UserInfoBean
+import com.v2ray.ang.custom.dataStore.UserInfoDataStore
 import com.v2ray.ang.databinding.CustomFragmentMineBinding
+import kotlinx.coroutines.launch
 
 /**
  * Created by wangkai on 2021/05/01 10:53
@@ -34,9 +37,13 @@ class MineFragment : BaseFragment() {
     override fun bindingView(rootView: View?) {
         loginBean = requireActivity().intent?.getSerializableExtra("loginBean") as UserInfoBean?
         binding?.buySubmit?.setOnClickListener {
-            val intent = Intent(requireActivity(), LoginActivity::class.java)
-            startActivity(intent)
+            lifecycleScope.launch {
+                UserInfoDataStore.clear()
+                val intent = Intent(requireActivity(), LoginActivity::class.java)
+                startActivity(intent)
+            }
         }
+
 
         binding?.mineItemFragment?.setOnClickListener {
             val intent = Intent(requireActivity(), BuyActivity::class.java)

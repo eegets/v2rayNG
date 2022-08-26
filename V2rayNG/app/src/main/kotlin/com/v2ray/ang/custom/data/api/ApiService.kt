@@ -17,7 +17,7 @@ interface ApiService {
      * 登陆
      */
     @GET("/u/login")
-    suspend fun login(@Query("username") userName: String, @Query("password") passWord: String): BaseResponse<UserInfoBean>
+    suspend fun login(@QueryMap map: MutableMap<String, String>): BaseResponse<UserInfoBean>
 
     /**
      * 登陆
@@ -29,6 +29,6 @@ interface ApiService {
      * 一键加速验证
      */
     @POST("accelerate_validate/check_auth")
-    suspend fun checkAuth(@QueryMap map: MutableMap<String, String>, @Query("smode") sMode: Int): BaseResponse<VMessBean>
+    suspend fun checkAuth(@QueryMap map: MutableMap<String, String>): BaseResponse<String>
 
 }

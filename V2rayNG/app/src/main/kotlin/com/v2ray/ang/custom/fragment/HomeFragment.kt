@@ -3,25 +3,26 @@ package com.v2ray.ang.custom.fragment
 import android.content.Intent
 import android.net.VpnService
 import android.os.Bundle
+import android.text.SpannableString
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import com.forest.bss.sdk.base.frag.BaseFragment
-import com.forest.bss.sdk.ext.nonNull
-import com.forest.bss.sdk.ext.showDialogSafely
-import com.forest.bss.sdk.ext.viewModel
+import com.forest.bss.sdk.ext.*
 import com.forest.bss.sdk.toast.ToastExt
 import com.forest.net.data.success
 import com.tencent.mmkv.MMKV
 import com.v2ray.ang.AppConfig
 import com.v2ray.ang.R
 import com.v2ray.ang.custom.activity.BuyActivity
+import com.v2ray.ang.custom.activity.LoginActivity
 import com.v2ray.ang.custom.data.entity.HomeBean
 import com.v2ray.ang.custom.data.model.HomeModel
-import com.v2ray.ang.custom.dialog.BottomShellDailogFragment
+import com.v2ray.ang.custom.dialog.BottomShellDialogFragment
+import com.v2ray.ang.custom.dialog.CommonDialog
+import com.v2ray.ang.custom.dialog.LoadingDialog
 import com.v2ray.ang.databinding.CustomFragmentHomeBinding
 import com.v2ray.ang.extension.toast
 import com.v2ray.ang.service.V2RayServiceManager
@@ -48,11 +49,11 @@ class HomeFragment : BaseFragment() {
 
     private val settingsStorage by lazy { MMKV.mmkvWithID(MmkvManager.ID_SETTING, MMKV.MULTI_PROCESS_MODE) }
 
-    private var homeDay: TextView? = null
-
     private var selectModeId: Int = 0
 
     private var hostList: List<HomeBean.Host> = mutableListOf()
+
+    private val loading = LoadingDialog.newInstance()
 
     override fun layoutId(): Int = R.layout.custom_fragment_home
     override fun viewBinding(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -64,17 +65,25 @@ class HomeFragment : BaseFragment() {
 
     override fun bindingView(rootView: View?) {
         homeModel?.getInfo()
-        homeDay?.text = "xxx"
+
+        mainViewModel?.startListenBroadcast()
 
         /**
          * 选择节点
          */
         binding?.selectMode?.setOnClickListener {
-            val dialogFragment = BottomShellDailogFragment.newInstance(listData = hostList)
+            val dialogFragment = BottomShellDialogFragment.newInstance(listData = hostList)
             dialogFragment.showDialogSafely(parentFragmentManager)
-            dialogFragment.selectSModeListener ={ sModeId->
+            dialogFragment.selectSModeListener ={ sModeId, sTitle ->
                 selectModeId = sModeId
+                binding?.selectModeText?.text = sTitle
             }
+        }
+        /**
+         * 关闭加速
+         */
+        binding?.closeConnect?.setOnClickListener {
+            Utils.stopVService(requireActivity())
         }
 
         /**
@@ -90,8 +99,8 @@ class HomeFragment : BaseFragment() {
          * 连接
          */
         binding?.connected?.setOnClickListener {
-//            homeModel?.checkAuth(selectModeId)
-            importBatchConfig(keys)
+            loading.showDialogSafely(parentFragmentManager)
+            homeModel?.checkAuth(selectModeId)
         }
     }
 
@@ -99,6 +108,11 @@ class HomeFragment : BaseFragment() {
         homeModel?.liveDataInfo?.observe(this) {
             if (it.success()) {
                 hostList = it.getOrNull()?.results?.hosts.nonNull(mutableListOf())
+                it.getOrNull()?.results?.user_info?.is_vip?.isVip()
+            } else if(it.getOrNull()?.code == 300) {
+                activity?.finish()
+                startActivity(Intent(activity, LoginActivity::class.java))
+                ToastExt.show(it?.getOrNull()?.msg ?: "")
             } else {
                 ToastExt.show(it?.getOrNull()?.msg ?: "")
             }
@@ -106,10 +120,20 @@ class HomeFragment : BaseFragment() {
 
         homeModel?.liveDataVMess?.observe(this) {
             if (it.success()) {
-                val vMessString = it.getOrNull()?.results?.vmess_string
-                if (vMessString?.isNotEmpty() == true) {
-                    importBatchConfig(vMessString)
-                }
+                val vMessString = it.getOrNull()?.results
+                importBatchConfig(vMessString)
+            } else {
+                loading.dismissAllowingStateLoss()
+                CommonDialog.newInstance("您的VIP会员已过期，请联系代理商购买激活卡开通会员").showDialogSafely(parentFragmentManager)
+            }
+        }
+        mainViewModel?.isRunning?.observe(this) { isRunning ->
+            if (isRunning) {
+                binding?.frameLayout?.makeVisible()
+                binding?.loading?.makeInvisible()
+                binding?.loadingText?.text = "连接成功"
+            } else {
+                binding?.frameLayout?.makeGone()
             }
         }
     }
@@ -123,8 +147,8 @@ class HomeFragment : BaseFragment() {
             count = AngConfigManager.importBatchConfig(Utils.decode(server!!), subid, true)
         }
         if (count > 0) {
-            context?.toast(R.string.toast_success)
             mainViewModel?.reloadServerList()
+            loading.dismissAllowingStateLoss()
             if (mainViewModel?.isRunning?.value == true) {
                 Utils.stopVService(requireContext())
             } else if (settingsStorage?.decodeString(AppConfig.PREF_MODE) ?: "VPN" == "VPN") {
@@ -166,6 +190,22 @@ class HomeFragment : BaseFragment() {
         }
     }
 
+    private fun String.isVip() {
+        if (this == "是") {
+            val msg = "您的会员将于XX天后到期"
+            val msg1 = "XX"
+            SpannableString(msg).let {
+                it.textSpan(msg, msg1, resources.getColor(R.color.colorPingRed))
+                it
+            }.apply {
+                binding?.homeDay?.text = this
+            }
+
+        } else {
+            binding?.homeDay?.text = "未开通会员或会员已到期，请前往续费或开通会员"
+        }
+    }
+
     /**
      * 开始连接
      */
@@ -173,7 +213,7 @@ class HomeFragment : BaseFragment() {
         if (mainStorage?.decodeString(MmkvManager.KEY_SELECTED_SERVER).isNullOrEmpty()) {
             return
         }
-        requireContext().toast("开始连接")
+        binding?.frameLayout?.makeVisible()
         V2RayServiceManager.startV2Ray(requireContext())
         requireContext().toast("连接成功")
     }

@@ -17,13 +17,13 @@ import com.v2ray.ang.databinding.CustomBottomShellDialogBinding
 
  * Desc 顶部弹出框
  */
-class BottomShellDailogFragment : AbsDialogFragment() {
+class BottomShellDialogFragment : AbsDialogFragment() {
 
     var binding: CustomBottomShellDialogBinding? = null
 
     private var adapter: BottomShellDialogAdapter? = null
 
-    var selectSModeListener: ((Int) -> Unit)? = null
+    var selectSModeListener: ((Int, String) -> Unit)? = null
 
     override fun isEnableViewBinding(): Boolean = true
 
@@ -48,7 +48,9 @@ class BottomShellDailogFragment : AbsDialogFragment() {
 
         adapter?.setOnItemClickListener { v, data, position ->
             val bean = data.asType<HomeBean.Host>()
-            bean?.id?.let { selectSModeListener?.invoke(it) }
+            if (bean != null) {
+                selectSModeListener?.invoke(bean.id, bean.title)
+            }
             dismissAllowingStateLoss()
         }
 
@@ -65,8 +67,8 @@ class BottomShellDailogFragment : AbsDialogFragment() {
     companion object {
         private const val LIST_DATA = "listData"
 
-        fun newInstance(listData: List<HomeBean.Host>? = mutableListOf()): BottomShellDailogFragment {
-            val fragment = BottomShellDailogFragment()
+        fun newInstance(listData: List<HomeBean.Host>? = mutableListOf()): BottomShellDialogFragment {
+            val fragment = BottomShellDialogFragment()
             val args = Bundle()
             args.putSerializable(LIST_DATA, listData?.asType())
             fragment.arguments = args

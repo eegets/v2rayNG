@@ -76,6 +76,7 @@ android {
         jvmTarget = JavaVersion.VERSION_1_8
     }
 
+    //分不同的arm架构包 ，减轻apk大小
     splits {
         abi {
             enable true

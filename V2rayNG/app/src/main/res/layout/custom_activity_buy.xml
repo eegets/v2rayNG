@@ -19,7 +19,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:text="里继续费" />
+            android:textSize="16sp"
+            android:textColor="@color/colorBlack"
+            android:textStyle="bold"
+            android:text="立即续费" />
     </RelativeLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -35,13 +38,13 @@
             android:textSize="18sp"
             android:textColor="#000000"
             android:textStyle="bold"
-            android:text="账户：ABC" />
+            tools:text="账户：ABC" />
         <TextView
             android:id="@+id/buyEndDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="VIP会员 于2021-12-11日到期" />
+            tools:text="VIP会员 于2021-12-11日到期" />
     </LinearLayout>
     <LinearLayout android:layout_width="match_parent"
         android:layout_height="60dp"
@@ -61,30 +64,28 @@
             android:layout_marginRight="20dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="输入卡号"
             tools:text="ABCDEFG"
             android:background="@color/white"/>
     </LinearLayout>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
-        android:textColor="#0027FF"
+        android:textColor="#1976fe"
         android:text="如何购买充值卡" />
 
     <TextView
         android:id="@+id/buySubmit"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="55dp"
         android:gravity="center"
-        android:background="@color/white"
+        android:background="@drawable/radius_4_bg_2d47da"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_gravity="center"
         android:layout_marginTop="40dp"
-        android:textColor="#0027FF"
-        android:textSize="24sp"
+        android:textColor="#1976fe"
+        android:textSize="18sp"
         android:text="立即使用" />
 </LinearLayout>

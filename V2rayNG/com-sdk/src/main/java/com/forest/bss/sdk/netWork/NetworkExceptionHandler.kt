@@ -1,5 +1,6 @@
 package com.forest.bss.sdk.netWork
 
+import com.forest.bss.sdk.log.logger
 import com.forest.bss.sdk.toast.ToastExt
 import kotlinx.coroutines.CoroutineExceptionHandler
 import java.net.SocketTimeoutException
@@ -20,7 +21,10 @@ class NetworkExceptionHandler(
         if (exception is UnknownHostException || exception is SocketTimeoutException) {
             ToastExt.show("发生网络错误，请稍后重试")
         } else {
-            ToastExt.show("请求失败，请重试")
+            logger {
+                "NetworkExceptionHandler request Error"
+            }
+//            ToastExt.show("请求失败，请重试")
         }
     }
 }

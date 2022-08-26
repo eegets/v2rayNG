@@ -19,13 +19,12 @@ class HomeModel : BaseViewModel() {
     private val _liveDataInfo = MutableLiveData<Result<BaseResponse<HomeBean>>>()
     val liveDataInfo = _liveDataInfo.asLiveData()
 
-    private val _liveDataVMess = MutableLiveData<Result<BaseResponse<VMessBean>>>()
+    private val _liveDataVMess = MutableLiveData<Result<BaseResponse<String>>>()
     val liveDataVMess = _liveDataVMess.asLiveData()
 
     fun getInfo() {
         viewModelScope.rxLaunch<BaseResponse<HomeBean>> {
             onRequest = {
-                val map = PublicRequestParams.params()
                 App.obtainRetrofitService(ApiService::class.java).getInfo(PublicRequestParams.params())
             }
             onSuccess = {
@@ -45,9 +44,11 @@ class HomeModel : BaseViewModel() {
      * [modeId] 节点id
      */
     fun checkAuth(modeId: Int) {
-        viewModelScope.rxLaunch<BaseResponse<VMessBean>> {
+        viewModelScope.rxLaunch<BaseResponse<String>> {
             onRequest = {
-                App.obtainRetrofitService(ApiService::class.java).checkAuth(PublicRequestParams.params(), modeId)
+                val mutableMap = mutableMapOf<String, String>()
+                mutableMap["smode"] = modeId.toString()
+                App.obtainRetrofitService(ApiService::class.java).checkAuth(PublicRequestParams.params(mutableMap))
             }
             onSuccess = {
                 _liveDataVMess.postValue(Result.success(it))
