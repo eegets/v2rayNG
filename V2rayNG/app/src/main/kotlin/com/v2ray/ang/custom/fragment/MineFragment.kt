@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import com.forest.bss.sdk.base.frag.BaseFragment
+import com.forest.bss.sdk.ext.finish
 import com.v2ray.ang.R
 import com.v2ray.ang.custom.activity.BuyActivity
 import com.v2ray.ang.custom.activity.LoginActivity
@@ -41,6 +42,7 @@ class MineFragment : BaseFragment() {
                 UserInfoDataStore.clear()
                 val intent = Intent(requireActivity(), LoginActivity::class.java)
                 startActivity(intent)
+                finish()
             }
         }
 

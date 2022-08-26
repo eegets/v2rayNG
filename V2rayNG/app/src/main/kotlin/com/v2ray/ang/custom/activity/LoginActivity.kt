@@ -55,6 +55,7 @@ class LoginActivity : BaseViewBindingActivity<CustomActivityLoginBinding>() {
                 val intent = Intent(this, MainActivity::class.java)
                 intent.putExtra("loginBean", it.getOrNull()?.results)
                 startActivity(intent)
+                finish()
             } else {
                 ToastExt.show(it?.getOrNull()?.msg ?: "")
             }

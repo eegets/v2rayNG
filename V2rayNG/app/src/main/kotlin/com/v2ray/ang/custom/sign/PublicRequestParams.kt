@@ -29,7 +29,7 @@ object PublicRequestParams {
             Pair("app_key", app_key),
             Pair("timestamp", timestamp.toString()),
             Pair("version", version.toString()),
-            Pair("mid", mid),
+            Pair("mid", if (mid.isNullOrEmpty()) "0" else mid ),
             Pair("token", token),
             Pair("device_id", device_id),
             Pair("device_type", device_type),
