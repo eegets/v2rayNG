@@ -11,7 +11,7 @@ import com.forest.bss.sdk.ext.asType
 import com.forest.bss.sdk.ext.finish
 import com.forest.bss.sdk.ext.showDialogSafely
 import com.forest.bss.sdk.ext.viewModel
-import com.forest.bss.sdk.toast.ToastExt
+import com.forest.bss.sdk.toast.SnackBarExt
 import com.forest.net.data.success
 import com.v2ray.ang.R
 import com.v2ray.ang.custom.activity.BuyActivity
@@ -23,7 +23,10 @@ import com.v2ray.ang.custom.data.model.MineModel
 import com.v2ray.ang.custom.dataStore.UserInfoDataStore
 import com.v2ray.ang.custom.dialog.DownloadDialog
 import com.v2ray.ang.custom.dialog.LoadingUtils
+import com.v2ray.ang.custom.webSocket.ConnectUtils
+import com.v2ray.ang.custom.webSocket.ConnectUtils.disConnectAppSend
 import com.v2ray.ang.databinding.CustomFragmentMineBinding
+import com.v2ray.ang.util.Utils
 import kotlinx.coroutines.launch
 
 /**
@@ -60,6 +63,8 @@ class MineFragment : BaseFragment() {
         binding?.buySubmit?.setOnClickListener {
             lifecycleScope.launch {
                 UserInfoDataStore.clear()
+                Utils.stopVService(requireActivity())
+                ConnectUtils.instance(HomeFragment.wsUrl)?.disConnectAppSend(requireActivity(), HomeFragment.selectModeId)
                 val intent = Intent(requireActivity(), LoginActivity::class.java)
                 startActivity(intent)
                 finish()
@@ -91,7 +96,7 @@ class MineFragment : BaseFragment() {
                     if (this.has_update) {
                         DownloadDialog.newInstance(this).showDialogSafely(parentFragmentManager)
                     } else {
-                        ToastExt.show("当前已是最新版本")
+                        SnackBarExt.show(requireActivity(), "当前已是最新版本")
                     }
                 }
             }

@@ -3,6 +3,8 @@ package com.v2ray.ang.custom.activity
 import android.widget.Toast
 import com.forest.bss.sdk.base.act.BaseViewBindingActivity
 import com.forest.bss.sdk.ext.viewModel
+import com.forest.bss.sdk.log.logger
+import com.forest.bss.sdk.toast.SnackBarExt
 import com.forest.bss.sdk.toast.ToastExt
 import com.forest.net.data.success
 import com.v2ray.ang.custom.data.entity.UserInfoBean
@@ -53,9 +55,9 @@ class BuyActivity : BaseViewBindingActivity<CustomActivityBuyBinding>() {
         model.liveDataBuy.observe(this) {
             buyLoading.hide()
             if (it.success()) {
-                ToastExt.show("已成功续费")
+                SnackBarExt.show(this.window.decorView, "已成功续费")
             } else {
-                it.getOrNull()?.msg?.let { it1 -> ToastExt.show(it1) }
+                it.getOrNull()?.msg?.let { it1 -> SnackBarExt.show(this.window.decorView, it1) }
             }
         }
     }

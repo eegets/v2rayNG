@@ -15,7 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.forest.bss.sdk.base.frag.BaseFragment
 import com.forest.bss.sdk.ext.*
-import com.forest.bss.sdk.toast.ToastExt
+import com.forest.bss.sdk.toast.SnackBarExt
 import com.forest.net.data.success
 import com.tencent.mmkv.MMKV
 import com.v2ray.ang.AppConfig
@@ -71,16 +71,6 @@ class HomeFragment : BaseFragment() {
             MMKV.MULTI_PROCESS_MODE
         )
     }
-
-    /**
-     * 选择的节点ID
-     */
-    private var selectModeId: Int = 0
-
-    /**
-     * webSocket Url 地址
-     */
-    private var wsUrl: String? = null
 
     private var packageInfos: List<String> = mutableListOf()
 
@@ -190,13 +180,13 @@ class HomeFragment : BaseFragment() {
                     UserInfoDataStore.clear()
                 }
 
-                ToastExt.show(it?.getOrNull()?.msg ?: "")
+                SnackBarExt.show(requireActivity(), it?.getOrNull()?.msg ?: "")
 
                 startActivity(Intent(activity, LoginActivity::class.java))
 
                 activity?.finish()
             } else {
-                ToastExt.show(it?.getOrNull()?.msg ?: "")
+                SnackBarExt.show(requireActivity(), it?.getOrNull()?.msg ?: "")
             }
         }
 
@@ -340,6 +330,16 @@ class HomeFragment : BaseFragment() {
         private const val REQUEST_SCAN = 1
         private const val REQUEST_FILE_CHOOSER = 2
         private const val REQUEST_SCAN_URL = 3
+
+        /**
+         * 选择的节点ID
+         */
+        var selectModeId: Int = 0
+
+        /**
+         * webSocket Url 地址
+         */
+        var wsUrl: String? = null
 
         const val keys =
             "vmess://eyJhZGQiOiI1NC45NS4xMjYuNjUiLCJhaWQiOiI2NCIsImhvc3QiOiIiLCJpZCI6ImQwNjQ5ODlkLTg5NGMtNDJjNi1hYWE0LTA1ZjE3NDcxMzM5YSIsIm5ldCI6IndzIiwicGF0aCI6Ii93cy83czRjazRpOjQxYmQ3NWU2NmMyMzA2ZWYzZTAxZWVmZmIxYzYwZTNlLyIsInBvcnQiOiI4MCIsInBzIjoiZmlyc3QtdjJyYXkiLCJ0bHMiOiIiLCJ0eXBlIjoibm9uZSIsInYiOiIyIn0="

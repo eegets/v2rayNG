@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.forest.bss.sdk.base.act.BaseViewBindingActivity
 import com.forest.bss.sdk.ext.viewModel
+import com.forest.bss.sdk.toast.SnackBarExt
 import com.forest.bss.sdk.toast.ToastExt
 import com.forest.net.data.success
 import com.v2ray.ang.custom.data.model.LoginModel
@@ -57,7 +58,7 @@ class LoginActivity : BaseViewBindingActivity<CustomActivityLoginBinding>() {
                 startActivity(intent)
                 finish()
             } else {
-                ToastExt.show(it?.getOrNull()?.msg ?: "")
+                SnackBarExt.show(this, it?.getOrNull()?.msg ?: "")
             }
         }
     }

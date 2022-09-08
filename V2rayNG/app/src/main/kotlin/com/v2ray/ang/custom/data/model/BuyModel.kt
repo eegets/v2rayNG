@@ -8,6 +8,7 @@ import com.forest.bss.sdk.netWork.rxLaunch
 import com.forest.net.app.App
 import com.forest.net.data.BaseResponse
 import com.v2ray.ang.custom.data.api.ApiService
+import com.v2ray.ang.custom.data.entity.ErrorResult
 import com.v2ray.ang.custom.data.params.PublicRequestParams
 import kotlinx.coroutines.launch
 
@@ -19,11 +20,11 @@ import kotlinx.coroutines.launch
 
 class BuyModel : ViewModel() {
 
-    private val _liveDataBuy = MutableLiveData<Result<BaseResponse<String>>>()
+    private val _liveDataBuy = MutableLiveData<Result<BaseResponse<ErrorResult>>>()
     val liveDataBuy = _liveDataBuy.asLiveData()
 
    fun buy(card_no: String) {
-        viewModelScope.rxLaunch<BaseResponse<String>> {
+        viewModelScope.rxLaunch<BaseResponse<ErrorResult>> {
             onRequest = {
                 val mutableMap = mutableMapOf<String, String>()
                 mutableMap["card_no"] = card_no
@@ -31,9 +32,6 @@ class BuyModel : ViewModel() {
                     PublicRequestParams.params(mutableMap))
             }
             onSuccess = {
-                viewModelScope.launch {
-//                    UserInfoDataStore.save(it.results?.user_info)
-                }
                 _liveDataBuy.postValue(Result.success(it))
             }
             onError = {

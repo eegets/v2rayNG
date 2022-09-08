@@ -24,7 +24,6 @@ class MyOrderActivity : BaseViewBindingActivity<CustomActivityOrderBinding>(){
         }
         loading.show(this)
         model.queryOrderLists()
-
     }
 
     override fun viewModelObserve() {
@@ -38,26 +37,7 @@ class MyOrderActivity : BaseViewBindingActivity<CustomActivityOrderBinding>(){
                     binding?.recyclerView?.adapter = adapter
                     adapter.data = it.getOrNull()?.results
                 } else {
-//                    binding?.empty?.makeVisible()
-                    val aaa: MutableList<OrderBean> = mutableListOf()
-                    aaa.add(OrderBean(1, card_no = "10292922", create_time = "2011-12-12", end_date = "2011-12-30", exday = "30", status = "已付费"))
-                    aaa.add(OrderBean(1, card_no = "2121321", create_time = "2011-12-12", end_date = "2011-12-30", exday = "30", status = "已付费"))
-                    aaa.add(OrderBean(1, card_no = "2121312321", create_time = "2011-12-12", end_date = "2011-12-30", exday = "30", status = "已付费"))
-                    aaa.add(OrderBean(1, card_no = "324342", create_time = "2011-12-12", end_date = "2011-12-30", exday = "30", status = "已付费"))
-                    aaa.add(OrderBean(1, card_no = "10292922", create_time = "2011-12-12", end_date = "2011-12-30", exday = "30", status = "已付费"))
-                    aaa.add(OrderBean(1, card_no = "32432423", create_time = "2011-12-12", end_date = "2011-12-30", exday = "30", status = "已付费"))
-                    aaa.add(OrderBean(1, card_no = "10292922", create_time = "2011-12-12", end_date = "2011-12-30", exday = "30", status = "已付费"))
-                    aaa.add(OrderBean(1, card_no = "10292922", create_time = "2011-12-12", end_date = "2011-12-30", exday = "30", status = "已付费"))
-                    aaa.add(OrderBean(1, card_no = "10292922", create_time = "2011-12-12", end_date = "2011-12-30", exday = "30", status = "已付费"))
-                    aaa.add(OrderBean(1, card_no = "10292922", create_time = "2011-12-12", end_date = "2011-12-30", exday = "30", status = "已付费"))
-                    aaa.add(OrderBean(1, card_no = "10292922", create_time = "2011-12-12", end_date = "2011-12-30", exday = "30", status = "已付费"))
-                    aaa.add(OrderBean(1, card_no = "10292922", create_time = "2011-12-12", end_date = "2011-12-30", exday = "30", status = "已付费"))
-                    aaa.add(OrderBean(1, card_no = "10292922", create_time = "2011-12-12", end_date = "2011-12-30", exday = "30", status = "已付费"))
-                    aaa.add(OrderBean(1, card_no = "10292922", create_time = "2011-12-12", end_date = "2011-12-30", exday = "30", status = "已付费"))
-                    binding?.empty?.makeGone()
-                    val adapter = OrderAdapter(this)
-                    binding?.recyclerView?.adapter = adapter
-                    adapter.data = aaa
+                    binding?.empty?.makeVisible()
                 }
             } else {
               binding?.empty?.makeVisible()

@@ -35,15 +35,9 @@ class AppInfoActivity : BaseViewBindingActivity<CustomActivityAppInfoBinding>() 
 
     private val appInfos: MutableList<AppInfoBean>? = mutableListOf()
 
-    private val model: BuyModel by lazy {
-        viewModel(BuyModel::class.java)
-    }
-
     private var adapter: AppInfoAdapter? = null
 
     private var checkAppInfo: MutableSet<String>? = mutableSetOf()
-
-    private val buyLoading: LoadingUtils by lazy { LoadingUtils() }
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun initView() {
@@ -109,14 +103,6 @@ class AppInfoActivity : BaseViewBindingActivity<CustomActivityAppInfoBinding>() 
 
     override fun viewModelObserve() {
         super.viewModelObserve()
-        model.liveDataBuy.observe(this) {
-            buyLoading?.hide()
-            if (it.success()) {
-                ToastExt.show("已成功续费")
-            } else {
-                it.getOrNull()?.msg?.let { it1 -> ToastExt.show(it1) }
-            }
-        }
     }
 
     override fun bindingLayout(): CustomActivityAppInfoBinding {

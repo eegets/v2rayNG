@@ -33,7 +33,7 @@ interface ApiService {
      *  续费
      */
     @POST("pay/activate")
-    suspend fun activatePayment(@QueryMap map: MutableMap<String, String>): BaseResponse<String>
+    suspend fun activatePayment(@QueryMap map: MutableMap<String, String>): BaseResponse<ErrorResult>
 
     /**
      *  检查更新
