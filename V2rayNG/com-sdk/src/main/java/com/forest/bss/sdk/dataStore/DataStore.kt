@@ -227,3 +227,19 @@ suspend fun DataStore<Preferences>.suspendReadLongKey(key: String): Long {
         preferences[longPreferencesKey(key)].isNull()
     }.first()
 }
+
+
+/**
+ * 异步获取[key]对应的dataStore的值
+ *
+ * [key] 缓存的key
+ *
+ * 返回值类型为`Set<String>? `
+ *
+ * https://developer.android.com/topic/libraries/architecture/datastore?hl=zh-cn#kotlin
+ */
+suspend fun DataStore<Preferences>.suspendReadStringSetKey(key: String): Set<String>? {
+    return data.map { preferences ->
+        preferences[stringSetPreferencesKey(key)]
+    }.first()
+}

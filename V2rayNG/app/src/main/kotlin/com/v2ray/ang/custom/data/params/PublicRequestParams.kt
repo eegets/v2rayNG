@@ -1,15 +1,14 @@
-package com.v2ray.ang.custom.sign
+package com.v2ray.ang.custom.data.params
 
 import com.blankj.utilcode.util.*
 import com.forest.bss.sdk.log.logger
+import com.v2ray.ang.custom.config.app_key
 import com.v2ray.ang.custom.dataStore.UserInfoDataStore
+import com.v2ray.ang.custom.sign.secretSign
 
 object PublicRequestParams {
 
-    val app_secertKey = "1f1287b0ddb20c2b1ab7ad41380464358a79084d"
-
     suspend fun pair(): MutableMap<String, String> {
-        val app_key = "6cc6fb7766656e6d73d5ddf2beac81d5"
         val timestamp = System.currentTimeMillis()
         val sign = ""
         val version = AppUtils.getAppVersionCode()
@@ -25,11 +24,11 @@ object PublicRequestParams {
         val net_work = NetworkUtils.getNetworkType()
         val pro = ScreenUtils.getScreenDensity()
 
-        return  mutableMapOf(
+        return mutableMapOf(
             Pair("app_key", app_key),
             Pair("timestamp", timestamp.toString()),
             Pair("version", version.toString()),
-            Pair("mid", if (mid.isNullOrEmpty()) "0" else mid ),
+            Pair("mid", if (mid.isNullOrEmpty()) "0" else mid),
             Pair("token", token),
             Pair("device_id", device_id),
             Pair("device_type", device_type),

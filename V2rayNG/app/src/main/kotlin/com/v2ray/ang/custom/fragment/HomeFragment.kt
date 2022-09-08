@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.forest.bss.sdk.base.frag.BaseFragment
 import com.forest.bss.sdk.ext.*
 import com.forest.bss.sdk.toast.ToastExt
@@ -16,13 +17,22 @@ import com.forest.net.data.success
 import com.tencent.mmkv.MMKV
 import com.v2ray.ang.AppConfig
 import com.v2ray.ang.R
+import com.v2ray.ang.custom.activity.AppInfoActivity
 import com.v2ray.ang.custom.activity.BuyActivity
 import com.v2ray.ang.custom.activity.LoginActivity
+import com.v2ray.ang.custom.activity.MainActivity
 import com.v2ray.ang.custom.data.entity.HomeBean
+import com.v2ray.ang.custom.data.entity.UserInfoBean
 import com.v2ray.ang.custom.data.model.HomeModel
+import com.v2ray.ang.custom.dataStore.UserInfoDataStore
 import com.v2ray.ang.custom.dialog.BottomShellDialogFragment
 import com.v2ray.ang.custom.dialog.CommonDialog
-import com.v2ray.ang.custom.dialog.LoadingDialog
+import com.v2ray.ang.custom.dialog.LoadingUtils
+import com.v2ray.ang.custom.webSocket.ConnectUtils
+import com.v2ray.ang.custom.webSocket.ConnectUtils.connectAppSend
+import com.v2ray.ang.custom.webSocket.ConnectUtils.disConnectAppSend
+import com.v2ray.ang.custom.webSocket.ConnectUtils.loginSend
+import com.v2ray.ang.custom.webSocket.ConnectUtils.preConnect
 import com.v2ray.ang.databinding.CustomFragmentHomeBinding
 import com.v2ray.ang.extension.toast
 import com.v2ray.ang.service.V2RayServiceManager
@@ -30,6 +40,7 @@ import com.v2ray.ang.util.AngConfigManager
 import com.v2ray.ang.util.MmkvManager
 import com.v2ray.ang.util.Utils
 import com.v2ray.ang.viewmodel.MainViewModel
+import kotlinx.coroutines.launch
 
 /**
  * Created by wangkai on 2021/05/01 10:53
@@ -45,18 +56,42 @@ class HomeFragment : BaseFragment() {
 
     private var binding: CustomFragmentHomeBinding? = null
 
-    private val mainStorage by lazy { MMKV.mmkvWithID(MmkvManager.ID_MAIN, MMKV.MULTI_PROCESS_MODE) }
+    private val mainStorage by lazy {
+        MMKV.mmkvWithID(
+            MmkvManager.ID_MAIN,
+            MMKV.MULTI_PROCESS_MODE
+        )
+    }
 
-    private val settingsStorage by lazy { MMKV.mmkvWithID(MmkvManager.ID_SETTING, MMKV.MULTI_PROCESS_MODE) }
+    private val settingsStorage by lazy {
+        MMKV.mmkvWithID(
+            MmkvManager.ID_SETTING,
+            MMKV.MULTI_PROCESS_MODE
+        )
+    }
 
+    /**
+     * 选择的节点ID
+     */
     private var selectModeId: Int = 0
+
+    /**
+     * webSocket Url 地址
+     */
+    private var wsUrl: String? = null
+
+    private var packageInfos: List<String> = mutableListOf()
 
     private var hostList: List<HomeBean.Host> = mutableListOf()
 
-    private val loading = LoadingDialog.newInstance()
+    private val connectLoading: LoadingUtils by lazy { LoadingUtils() }
 
     override fun layoutId(): Int = R.layout.custom_fragment_home
-    override fun viewBinding(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun viewBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         binding = CustomFragmentHomeBinding.inflate(inflater)
         return binding?.root
     }
@@ -69,12 +104,36 @@ class HomeFragment : BaseFragment() {
         mainViewModel?.startListenBroadcast()
 
         /**
+         * 选择加速模式
+         */
+        binding?.selectAppInfo?.setOnClickListener {
+            val intent = Intent(requireActivity(), AppInfoActivity::class.java)
+            intent.putStringArrayListExtra("packageInfos", packageInfos.asType())
+            startActivity(intent)
+        }
+
+        /**
+         * 选择安全配置
+         */
+        binding?.securityConfig?.setOnClickListener {
+            val securityLists: MutableList<HomeBean.Host> = mutableListOf()
+            securityLists.add((HomeBean.Host(id= 1, host = "", title = "高")))
+            securityLists.add((HomeBean.Host(id= 1, host = "",title = "中")))
+            securityLists.add((HomeBean.Host(id= 1, host = "",title = "低")))
+            val dialogFragment = BottomShellDialogFragment.newInstance(listData = securityLists)
+            dialogFragment.showDialogSafely(parentFragmentManager)
+            dialogFragment.selectSModeListener = { id, title ->
+                binding?.securityText?.text = title
+            }
+        }
+
+        /**
          * 选择节点
          */
-        binding?.selectMode?.setOnClickListener {
+        binding?.selectMode?.setOnClickListener{
             val dialogFragment = BottomShellDialogFragment.newInstance(listData = hostList)
             dialogFragment.showDialogSafely(parentFragmentManager)
-            dialogFragment.selectSModeListener ={ sModeId, sTitle ->
+            dialogFragment.selectSModeListener = { sModeId, sTitle ->
                 selectModeId = sModeId
                 binding?.selectModeText?.text = sTitle
             }
@@ -84,22 +143,23 @@ class HomeFragment : BaseFragment() {
          */
         binding?.closeConnect?.setOnClickListener {
             Utils.stopVService(requireActivity())
+            ConnectUtils.instance(wsUrl)?.disConnectAppSend(requireActivity(), selectModeId)
         }
 
         /**
          * 立即续费
          */
         binding?.homeBuy?.setOnClickListener {
-            Intent(requireActivity(), BuyActivity::class.java).apply {
-                startActivity(this)
-            }
+            val intent = Intent(requireActivity(), BuyActivity::class.java)
+            intent.putExtra("userInfo", activity?.asType<MainActivity>()?.userInfo)
+            startActivity(intent)
         }
 
         /**
          * 连接
          */
         binding?.connected?.setOnClickListener {
-            loading.showDialogSafely(parentFragmentManager)
+            connectLoading.show(this, "正在开启加速中...")
             homeModel?.checkAuth(selectModeId)
         }
     }
@@ -107,24 +167,46 @@ class HomeFragment : BaseFragment() {
     override fun bindViewModelObserve(rootView: View?) {
         homeModel?.liveDataInfo?.observe(this) {
             if (it.success()) {
-                hostList = it.getOrNull()?.results?.hosts.nonNull(mutableListOf())
-                it.getOrNull()?.results?.user_info?.is_vip?.isVip()
-            } else if(it.getOrNull()?.code == 300) {
-                activity?.finish()
-                startActivity(Intent(activity, LoginActivity::class.java))
+
+                it.getOrNull()?.results?.apply {
+                    wsUrl = this.ws_url
+
+                    val isConnected = ConnectUtils.instance(wsUrl)?.preConnect()
+                    if (isConnected == true) {
+                        ConnectUtils.instance(wsUrl)?.loginSend(requireActivity())
+                    }
+                    hostList = this.hosts.nonNull(mutableListOf())
+
+                    packageInfos = this.auth_apps
+
+                    this.user_info.is_vip.isVip(this.exp_day)
+                    activity?.asType<MainActivity>()?.userInfo = this.user_info
+                }
+            } else if (it.getOrNull()?.code == 300) {
+
+                lifecycleScope.launch {
+                    UserInfoDataStore.clear()
+                }
+
                 ToastExt.show(it?.getOrNull()?.msg ?: "")
+
+                startActivity(Intent(activity, LoginActivity::class.java))
+
+                activity?.finish()
             } else {
                 ToastExt.show(it?.getOrNull()?.msg ?: "")
             }
         }
 
         homeModel?.liveDataVMess?.observe(this) {
+            connectLoading.hide()
             if (it.success()) {
                 val vMessString = it.getOrNull()?.results
                 importBatchConfig(vMessString)
+                ConnectUtils.instance(wsUrl)?.connectAppSend(requireActivity(), selectModeId)
             } else {
-                loading.dismissAllowingStateLoss()
-                CommonDialog.newInstance("您的VIP会员已过期，请联系代理商购买激活卡开通会员").showDialogSafely(parentFragmentManager)
+                CommonDialog.newInstance("您的VIP会员已过期，请联系代理商购买激活卡开通会员")
+                    .showDialogSafely(parentFragmentManager)
             }
         }
         mainViewModel?.isRunning?.observe(this) { isRunning ->
@@ -148,7 +230,7 @@ class HomeFragment : BaseFragment() {
         }
         if (count > 0) {
             mainViewModel?.reloadServerList()
-            loading.dismissAllowingStateLoss()
+            connectLoading.hide()
             if (mainViewModel?.isRunning?.value == true) {
                 Utils.stopVService(requireContext())
             } else if (settingsStorage?.decodeString(AppConfig.PREF_MODE) ?: "VPN" == "VPN") {
@@ -190,17 +272,20 @@ class HomeFragment : BaseFragment() {
         }
     }
 
-    private fun String.isVip() {
+    private fun String.isVip(exp_day: String? = null) {
         if (this == "是") {
-            val msg = "您的会员将于XX天后到期"
-            val msg1 = "XX"
-            SpannableString(msg).let {
-                it.textSpan(msg, msg1, resources.getColor(R.color.colorPingRed))
-                it
-            }.apply {
-                binding?.homeDay?.text = this
+            if (exp_day.isNullOrEmpty()) {
+                binding?.homeDay?.text = "未开通会员或会员已到期，请前往续费或开通会员"
+                return
+            } else {
+                val msg = "您的会员将于 $exp_day 天后到期"
+                SpannableString(msg).let {
+                    it.textSpan(msg, exp_day, resources.getColor(R.color.colorPingRed))
+                    it
+                }.apply {
+                    binding?.homeDay?.text = this
+                }
             }
-
         } else {
             binding?.homeDay?.text = "未开通会员或会员已到期，请前往续费或开通会员"
         }
@@ -224,6 +309,7 @@ class HomeFragment : BaseFragment() {
         private const val REQUEST_FILE_CHOOSER = 2
         private const val REQUEST_SCAN_URL = 3
 
-        const val keys = "vmess://eyJhZGQiOiI1NC45NS4xMjYuNjUiLCJhaWQiOiI2NCIsImhvc3QiOiIiLCJpZCI6ImQwNjQ5ODlkLTg5NGMtNDJjNi1hYWE0LTA1ZjE3NDcxMzM5YSIsIm5ldCI6IndzIiwicGF0aCI6Ii93cy83czRjazRpOjQxYmQ3NWU2NmMyMzA2ZWYzZTAxZWVmZmIxYzYwZTNlLyIsInBvcnQiOiI4MCIsInBzIjoiZmlyc3QtdjJyYXkiLCJ0bHMiOiIiLCJ0eXBlIjoibm9uZSIsInYiOiIyIn0="
+        const val keys =
+            "vmess://eyJhZGQiOiI1NC45NS4xMjYuNjUiLCJhaWQiOiI2NCIsImhvc3QiOiIiLCJpZCI6ImQwNjQ5ODlkLTg5NGMtNDJjNi1hYWE0LTA1ZjE3NDcxMzM5YSIsIm5ldCI6IndzIiwicGF0aCI6Ii93cy83czRjazRpOjQxYmQ3NWU2NmMyMzA2ZWYzZTAxZWVmZmIxYzYwZTNlLyIsInBvcnQiOiI4MCIsInBzIjoiZmlyc3QtdjJyYXkiLCJ0bHMiOiIiLCJ0eXBlIjoibm9uZSIsInYiOiIyIn0="
     }
 }

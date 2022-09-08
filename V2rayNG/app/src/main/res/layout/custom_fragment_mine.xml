@@ -13,7 +13,8 @@
         android:background="#1774ff"
         android:orientation="vertical">
         <TextView
-            android:text="个人中心"
+            android:id="@+id/userName"
+            tools:text="个人中心"
             android:textSize="24sp"
             android:textColor="@color/white"
             android:layout_marginTop="30dp"
@@ -25,47 +26,53 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:paddingLeft="20dp">
+
             <ImageView
                 android:id="@+id/mineIcon"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:src="@color/white" />
+                android:src="@mipmap/headicon" />
+
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="80dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:layout_marginLeft="16dp"
                 android:layout_centerVertical="true"
+                android:layout_marginLeft="16dp"
                 android:layout_toRightOf="@+id/mineIcon"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
+
                 <TextView
                     android:id="@+id/mineTitle"
-                    android:text="个人中心"
-                    android:textSize="16sp"
-                    android:textColor="@color/white"
-                    android:gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-                <TextView
-                    android:text="VIP会员 于2022-11-10日到期"
-                    android:textSize="14sp"
-                    android:layout_alignParentBottom="true"
-                    android:textColor="@color/white"
-                    android:gravity="bottom"
-                    android:layout_gravity="bottom"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-                <TextView
-                    android:id="@+id/mineBackIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="个人中心"
                     android:textColor="@color/white"
-                    android:background="@mipmap/default_more"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/mineCountDown"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_gravity="bottom"
+                    android:gravity="bottom"
+                    android:text="VIP会员 于2022-11-10日到期"
+                    android:textColor="@color/white"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/mineBackIcon"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="20dp"
-                    android:layout_alignParentRight="true"
-                    android:src="@color/white" />
+                    android:background="@mipmap/default_more"
+                    android:src="@color/white"
+                    android:textColor="@color/white" />
             </RelativeLayout>
         </RelativeLayout>
     </LinearLayout>
@@ -99,6 +106,7 @@
             android:background="#f2f2f2" />
     </RelativeLayout>
     <RelativeLayout
+        android:id="@+id/order"
         android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="50dp">
@@ -153,6 +161,7 @@
             android:background="#f2f2f2" />
     </RelativeLayout>
     <RelativeLayout
+        android:id="@+id/checkUpdate"
         android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="50dp">

@@ -10,7 +10,7 @@ import com.forest.net.data.BaseResponse
 import com.v2ray.ang.custom.data.api.ApiService
 import com.v2ray.ang.custom.data.entity.UserInfoBean
 import com.v2ray.ang.custom.dataStore.UserInfoDataStore
-import com.v2ray.ang.custom.sign.PublicRequestParams
+import com.v2ray.ang.custom.data.params.PublicRequestParams
 import kotlinx.coroutines.launch
 
 /**

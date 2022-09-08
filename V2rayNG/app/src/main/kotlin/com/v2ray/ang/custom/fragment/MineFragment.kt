@@ -7,12 +7,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import com.forest.bss.sdk.base.frag.BaseFragment
+import com.forest.bss.sdk.ext.asType
 import com.forest.bss.sdk.ext.finish
+import com.forest.bss.sdk.ext.showDialogSafely
+import com.forest.bss.sdk.ext.viewModel
+import com.forest.bss.sdk.toast.ToastExt
+import com.forest.net.data.success
 import com.v2ray.ang.R
 import com.v2ray.ang.custom.activity.BuyActivity
 import com.v2ray.ang.custom.activity.LoginActivity
+import com.v2ray.ang.custom.activity.MainActivity
+import com.v2ray.ang.custom.activity.MyOrderActivity
 import com.v2ray.ang.custom.data.entity.UserInfoBean
+import com.v2ray.ang.custom.data.model.MineModel
 import com.v2ray.ang.custom.dataStore.UserInfoDataStore
+import com.v2ray.ang.custom.dialog.DownloadDialog
+import com.v2ray.ang.custom.dialog.LoadingUtils
 import com.v2ray.ang.databinding.CustomFragmentMineBinding
 import kotlinx.coroutines.launch
 
@@ -24,9 +34,13 @@ import kotlinx.coroutines.launch
 
 class MineFragment : BaseFragment() {
 
-    private var loginBean: UserInfoBean? = null
+    private var userInfo: UserInfoBean? = null
 
     private var binding: CustomFragmentMineBinding? = null
+
+    private val checkLoading: LoadingUtils by lazy {LoadingUtils()}
+
+    private val model by lazy { viewModel<MineModel>() }
 
     override fun layoutId(): Int = R.layout.custom_fragment_mine
     override fun viewBinding(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -36,7 +50,13 @@ class MineFragment : BaseFragment() {
 
     override fun isEnableViewBinding(): Boolean = true
     override fun bindingView(rootView: View?) {
-        loginBean = requireActivity().intent?.getSerializableExtra("loginBean") as UserInfoBean?
+
+        userInfo = activity?.asType<MainActivity>()?.userInfo
+
+        binding?.mineTitle?.text = "${userInfo?.username}"
+
+        binding?.mineCountDown?.text = "VIP会员 于${userInfo?.end_date}日到期"
+
         binding?.buySubmit?.setOnClickListener {
             lifecycleScope.launch {
                 UserInfoDataStore.clear()
@@ -46,15 +66,35 @@ class MineFragment : BaseFragment() {
             }
         }
 
+        binding?.checkUpdate?.setOnClickListener {
+            checkLoading.show(this)
+            model?.checkUpdate()
+        }
+
+        binding?.order?.setOnClickListener {
+            val intent = Intent(requireActivity(), MyOrderActivity::class.java)
+            startActivity(intent)
+        }
 
         binding?.mineItemFragment?.setOnClickListener {
             val intent = Intent(requireActivity(), BuyActivity::class.java)
-            intent.putExtra("loginBean", loginBean)
+            intent.putExtra("userInfo", userInfo)
             startActivity(intent)
         }
     }
 
     override fun bindViewModelObserve(rootView: View?) {
-
+        model?.liveDataCheckUpdate?.observe(requireActivity()) {
+            checkLoading.hide()
+            if (it.success()) {
+                it.getOrNull()?.results?.apply {
+                    if (this.has_update) {
+                        DownloadDialog.newInstance(this).showDialogSafely(parentFragmentManager)
+                    } else {
+                        ToastExt.show("当前已是最新版本")
+                    }
+                }
+            }
+        }
     }
 }

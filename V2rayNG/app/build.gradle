@@ -145,6 +145,17 @@ dependencies {
     implementation 'com.blacksquircle.ui:language-base:2.1.1'
     implementation 'com.blacksquircle.ui:language-json:2.1.1'
 
+    /**
+     * Java-WebSocket
+     * https://github.com/TooTallNate/Java-WebSocket
+     */
+    implementation 'org.java-websocket:Java-WebSocket:1.5.2'
+
+    /**
+     *  用于加载GIF图。解决Glide加载GIF动图导致内存和CPU上升问题
+     */
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.24'
+
     api project(':com-sdk')
 }
 

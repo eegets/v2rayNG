@@ -1,9 +1,7 @@
 package com.v2ray.ang.custom.data.api
 
 import com.forest.net.data.BaseResponse
-import com.v2ray.ang.custom.data.entity.HomeBean
-import com.v2ray.ang.custom.data.entity.UserInfoBean
-import com.v2ray.ang.custom.data.entity.VMessBean
+import com.v2ray.ang.custom.data.entity.*
 import retrofit2.http.*
 
 /**
@@ -30,5 +28,23 @@ interface ApiService {
      */
     @POST("accelerate_validate/check_auth")
     suspend fun checkAuth(@QueryMap map: MutableMap<String, String>): BaseResponse<String>
+
+    /**
+     *  续费
+     */
+    @POST("pay/activate")
+    suspend fun activatePayment(@QueryMap map: MutableMap<String, String>): BaseResponse<String>
+
+    /**
+     *  检查更新
+     */
+    @POST("version/get_update")
+    suspend fun checkUpdate(@QueryMap map: MutableMap<String, String>): BaseResponse<UpdateBean>
+
+    /**
+     *  我的订单
+     */
+    @POST("pay/get_orders")
+    suspend fun queryOrderLists(@QueryMap map: MutableMap<String, String>): BaseResponse<MutableList<OrderBean>>
 
 }

@@ -48,6 +48,8 @@
 
         <activity android:name=".custom.activity.LoginActivity" />
         <activity android:name=".custom.activity.BuyActivity" />
+        <activity android:name=".custom.activity.AppInfoActivity" />
+        <activity android:name=".custom.activity.MyOrderActivity" />
 
         <activity android:name=".custom.activity.MainActivity"
             android:exported="true">

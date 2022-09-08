@@ -8,7 +8,9 @@ data class HomeBean(
     val hosts: List<Host>,
     val is_alert: String,
     val user_info: UserInfoBean,
-    val web_domain: String
+    val web_domain: String,
+    val exp_day: String? = null,
+    val ws_url: String,
 ): Serializable {
     data class Host(
         val id: Int,

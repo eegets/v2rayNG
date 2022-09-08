@@ -3,11 +3,13 @@ package com.v2ray.ang.custom.data.model
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.blankj.utilcode.util.AppUtils
 import com.forest.bss.sdk.livedata.asLiveData
 import com.forest.bss.sdk.netWork.rxLaunch
 import com.forest.net.app.App
 import com.forest.net.data.BaseResponse
 import com.v2ray.ang.custom.data.api.ApiService
+import com.v2ray.ang.custom.data.entity.UpdateBean
 import com.v2ray.ang.custom.data.params.PublicRequestParams
 import kotlinx.coroutines.launch
 
@@ -17,27 +19,26 @@ import kotlinx.coroutines.launch
  * Desc TODO
  */
 
-class BuyModel : ViewModel() {
+class MineModel : ViewModel() {
 
-    private val _liveDataBuy = MutableLiveData<Result<BaseResponse<String>>>()
-    val liveDataBuy = _liveDataBuy.asLiveData()
+    private val _liveDataCheckUpdate = MutableLiveData<Result<BaseResponse<UpdateBean>>>()
+    val liveDataCheckUpdate = _liveDataCheckUpdate.asLiveData()
 
-   fun buy(card_no: String) {
-        viewModelScope.rxLaunch<BaseResponse<String>> {
+   fun checkUpdate() {
+        viewModelScope.rxLaunch<BaseResponse<UpdateBean>> {
             onRequest = {
                 val mutableMap = mutableMapOf<String, String>()
-                mutableMap["card_no"] = card_no
-                App.obtainRetrofitService(ApiService::class.java).activatePayment(
-                    PublicRequestParams.params(mutableMap))
+                mutableMap["version_code"] = AppUtils.getAppVersionCode().toString()
+                App.obtainRetrofitService(ApiService::class.java).checkUpdate(PublicRequestParams.params(mutableMap))
             }
             onSuccess = {
                 viewModelScope.launch {
 //                    UserInfoDataStore.save(it.results?.user_info)
                 }
-                _liveDataBuy.postValue(Result.success(it))
+                _liveDataCheckUpdate.postValue(Result.success(it))
             }
             onError = {
-                _liveDataBuy.postValue(Result.failure(it))
+                _liveDataCheckUpdate.postValue(Result.failure(it))
             }
         }
     }

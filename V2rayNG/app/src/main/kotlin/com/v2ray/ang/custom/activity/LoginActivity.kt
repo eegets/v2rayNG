@@ -8,7 +8,7 @@ import com.forest.bss.sdk.ext.viewModel
 import com.forest.bss.sdk.toast.ToastExt
 import com.forest.net.data.success
 import com.v2ray.ang.custom.data.model.LoginModel
-import com.v2ray.ang.custom.sign.PublicRequestParams
+import com.v2ray.ang.custom.data.params.PublicRequestParams
 import com.v2ray.ang.databinding.CustomActivityLoginBinding
 import kotlinx.coroutines.launch
 

@@ -3,6 +3,7 @@ package com.v2ray.ang.custom.activity
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.v2ray.ang.R
+import com.v2ray.ang.custom.data.entity.UserInfoBean
 
 /**
  * Created by wangkai on 2021/05/01 10:27
@@ -11,6 +12,8 @@ import com.v2ray.ang.R
  */
 
 class MainActivity : AppCompatActivity() {
+
+    var userInfo: UserInfoBean? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
