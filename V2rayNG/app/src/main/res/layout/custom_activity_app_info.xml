@@ -15,9 +15,8 @@
             android:gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            android:text="返回"/>
+            android:drawableLeft="@mipmap/back"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"

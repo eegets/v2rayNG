@@ -6,7 +6,6 @@ import com.forest.bss.sdk.countdown.scheduleTimer
 import com.forest.bss.sdk.log.logger
 import com.v2ray.ang.custom.webSocket.params.PublicWebSocketParams
 import kotlinx.coroutines.launch
-import org.java_websocket.WebSocket
 import org.java_websocket.enums.ReadyState
 import org.json.JSONObject
 import java.net.URI
@@ -84,11 +83,15 @@ object ConnectUtils {
                 }
 
                 if (socket?.isOpen == true) {
-                    socket.send(params.toString())
+                    try {
+                        socket.send(params.toString())
+                    }catch (throwable: Throwable) {
+                        throwable.printStackTrace()
+                    }
                 }
 
                 logger {
-                    "CusWebSocket onOpen 发送数据 json: $params; socket: $socket"
+                    "CusWebSocket onOpen isOpen: ${socket?.isOpen} 发送数据 json: $params; socket: $socket"
                 }
             }
         }

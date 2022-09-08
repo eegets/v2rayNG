@@ -7,6 +7,9 @@ import android.text.SpannableString
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import android.view.animation.LinearInterpolator
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -22,7 +25,6 @@ import com.v2ray.ang.custom.activity.BuyActivity
 import com.v2ray.ang.custom.activity.LoginActivity
 import com.v2ray.ang.custom.activity.MainActivity
 import com.v2ray.ang.custom.data.entity.HomeBean
-import com.v2ray.ang.custom.data.entity.UserInfoBean
 import com.v2ray.ang.custom.data.model.HomeModel
 import com.v2ray.ang.custom.dataStore.UserInfoDataStore
 import com.v2ray.ang.custom.dialog.BottomShellDialogFragment
@@ -159,7 +161,7 @@ class HomeFragment : BaseFragment() {
          * 连接
          */
         binding?.connected?.setOnClickListener {
-            connectLoading.show(this, "正在开启加速中...")
+            startLoading()
             homeModel?.checkAuth(selectModeId)
         }
     }
@@ -199,7 +201,6 @@ class HomeFragment : BaseFragment() {
         }
 
         homeModel?.liveDataVMess?.observe(this) {
-            connectLoading.hide()
             if (it.success()) {
                 val vMessString = it.getOrNull()?.results
                 importBatchConfig(vMessString)
@@ -211,13 +212,46 @@ class HomeFragment : BaseFragment() {
         }
         mainViewModel?.isRunning?.observe(this) { isRunning ->
             if (isRunning) {
-                binding?.frameLayout?.makeVisible()
-                binding?.loading?.makeInvisible()
-                binding?.loadingText?.text = "连接成功"
+                alreadyLoaded()
             } else {
-                binding?.frameLayout?.makeGone()
+                stopLoaded()
             }
         }
+    }
+
+    /**
+     * 开始启动加速
+     */
+    private fun startLoading() {
+        binding?.frameLayout?.makeVisible()
+        binding?.loadingLayout?.makeVisible()
+        val rotateAnimation: Animation = AnimationUtils.loadAnimation(requireContext(), R.anim.icon_rotate_in)
+        val rotateAnimation1: Animation = AnimationUtils.loadAnimation(requireContext(), R.anim.icon_rotate_out)
+        rotateAnimation.interpolator = LinearInterpolator()
+        rotateAnimation1.interpolator = LinearInterpolator()
+        binding?.loadingIconIn?.startAnimation(rotateAnimation)
+        binding?.loadingIconOut?.startAnimation(rotateAnimation1)
+        binding?.loadingText?.text = "连接中"
+    }
+
+    /**
+     * 已经在加速中
+     */
+    private fun alreadyLoaded() {
+        binding?.frameLayout?.makeVisible()
+        binding?.loadingLayout?.makeInvisible()
+        binding?.loadingIconIn?.clearAnimation()
+        binding?.loadingIconOut?.clearAnimation()
+        binding?.loadingText?.text = "连接成功"
+    }
+
+    /**
+     * 已经断开了加速
+     */
+    private fun stopLoaded() {
+        binding?.loadingIconIn?.clearAnimation()
+        binding?.loadingIconOut?.clearAnimation()
+        binding?.frameLayout?.makeGone()
     }
 
     /***
@@ -298,9 +332,7 @@ class HomeFragment : BaseFragment() {
         if (mainStorage?.decodeString(MmkvManager.KEY_SELECTED_SERVER).isNullOrEmpty()) {
             return
         }
-        binding?.frameLayout?.makeVisible()
         V2RayServiceManager.startV2Ray(requireContext())
-        requireContext().toast("连接成功")
     }
 
     companion object {

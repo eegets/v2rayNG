@@ -70,7 +70,7 @@
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="20dp"
-                    android:background="@mipmap/default_more"
+                    android:background="@mipmap/arrow_right"
                     android:src="@color/white"
                     android:textColor="@color/white" />
             </RelativeLayout>
@@ -81,15 +81,16 @@
         android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="50dp">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:drawablePadding="10dp"
             android:layout_marginLeft="16dp"
-            android:drawableLeft="@mipmap/icon_wd_jingying"
+            android:drawableLeft="@mipmap/lijixufei"
+            android:drawablePadding="10dp"
             android:gravity="center"
-            android:text="立即续费"/>
+            android:text="立即续费" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -110,15 +111,16 @@
         android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="50dp">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:drawablePadding="10dp"
             android:layout_marginLeft="16dp"
-            android:drawableLeft="@mipmap/icon_wd_jingying"
+            android:drawableLeft="@mipmap/dingdan"
+            android:drawablePadding="10dp"
             android:gravity="center"
-            android:text="我的订单"/>
+            android:text="我的订单" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -137,15 +139,16 @@
         android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="50dp">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:drawablePadding="10dp"
             android:layout_marginLeft="16dp"
-            android:drawableLeft="@mipmap/icon_wd_jingying"
+            android:drawableLeft="@mipmap/yijiianfankui"
+            android:drawablePadding="10dp"
             android:gravity="center"
-            android:text="意见反馈"/>
+            android:text="意见反馈" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -165,15 +168,16 @@
         android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="50dp">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:drawablePadding="10dp"
             android:layout_marginLeft="16dp"
-            android:drawableLeft="@mipmap/icon_wd_jingying"
+            android:drawableLeft="@mipmap/jianchagengxin"
+            android:drawablePadding="10dp"
             android:gravity="center"
-            android:text="检查更新"/>
+            android:text="检查更新" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -192,15 +196,16 @@
         android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="50dp">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:drawablePadding="10dp"
             android:layout_marginLeft="16dp"
-            android:drawableLeft="@mipmap/icon_wd_jingying"
+            android:drawableLeft="@mipmap/bangzhuzhongxin"
+            android:drawablePadding="10dp"
             android:gravity="center"
-            android:text="帮助中心"/>
+            android:text="帮助中心" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

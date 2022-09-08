@@ -19,11 +19,11 @@ class OrderAdapter(private val context: Context) : BaseRecvAdapter<OrderBean>(co
         }
 
         override fun bindView(data: OrderBean, position: Int) {
-            binding?.numberText?.text = data.card_no
-            binding?.orderStatus?.text = "订单状态：${data.status}"
+            binding?.numberText?.text = "卡号："+data.card_no
+            binding?.orderStatus?.text = "${data.status}"
             binding?.numberStartTime?.text = "使用时间：${data.create_time}"
             binding?.numberStartEnd?.text = "到期日期：${data.end_date}"
-            binding?.orderExceedDay?.text = "增加天数：${data.exday}"
+            binding?.orderExceedDay?.text = "增加天数：${data.exday}天"
 
         }
     }

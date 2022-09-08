@@ -208,7 +208,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     isRunning.value = false
                 }
                 AppConfig.MSG_STATE_START_SUCCESS -> {
-                    getApplication<AngApplication>().toast(R.string.toast_services_success)
+//                    getApplication<AngApplication>().toast(R.string.toast_services_success)
                     isRunning.value = true
                 }
                 AppConfig.MSG_STATE_START_FAILURE -> {
