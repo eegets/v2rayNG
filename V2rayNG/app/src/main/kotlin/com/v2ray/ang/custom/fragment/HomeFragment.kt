@@ -20,10 +20,7 @@ import com.forest.net.data.success
 import com.tencent.mmkv.MMKV
 import com.v2ray.ang.AppConfig
 import com.v2ray.ang.R
-import com.v2ray.ang.custom.activity.AppInfoActivity
-import com.v2ray.ang.custom.activity.BuyActivity
-import com.v2ray.ang.custom.activity.LoginActivity
-import com.v2ray.ang.custom.activity.MainActivity
+import com.v2ray.ang.custom.activity.*
 import com.v2ray.ang.custom.data.entity.HomeBean
 import com.v2ray.ang.custom.data.model.HomeModel
 import com.v2ray.ang.custom.data.model.MineModel
@@ -160,6 +157,13 @@ class HomeFragment : BaseFragment() {
             startLoading()
             homeModel?.checkAuth(selectModeId)
         }
+
+        /**
+         * 购买会员卡
+         */
+        binding?.buyProLink?.setOnClickListener {
+            WebViewActivity.start(requireActivity(), "https://www.baidu.com")
+        }
     }
 
     override fun bindViewModelObserve(rootView: View?) {
@@ -216,7 +220,7 @@ class HomeFragment : BaseFragment() {
         mimeModel?.liveDataCheckUpdate?.observe(requireActivity()) {
             if (it.success()) {
                 it.getOrNull()?.results?.apply {
-                    if (!this.has_update) {
+                    if (this.has_update) {
                         DownloadDialog.newInstance(this).showDialogSafely(parentFragmentManager)
                     }
                 }
