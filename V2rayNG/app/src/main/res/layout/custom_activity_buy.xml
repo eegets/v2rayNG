@@ -70,8 +70,8 @@
             android:layout_marginRight="20dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:text="ABCDEFG"
             android:inputType="number"
+            android:hint="请输入卡号"
             android:background="@color/white"/>
     </LinearLayout>
     <TextView
