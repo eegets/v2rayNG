@@ -93,7 +93,7 @@ class MineFragment : BaseFragment() {
             checkLoading.hide()
             if (it.success()) {
                 it.getOrNull()?.results?.apply {
-                    if (this.has_update) {
+                    if (!this.has_update) {
                         DownloadDialog.newInstance(this).showDialogSafely(parentFragmentManager)
                     } else {
                         SnackBarExt.show(requireActivity(), "当前已是最新版本")

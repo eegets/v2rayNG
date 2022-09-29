@@ -1,11 +1,18 @@
 package com.v2ray.ang.custom.dialog
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.forest.bss.sdk.ext.asType
+import com.forest.bss.sdk.ext.makeGone
+import com.forest.bss.sdk.ext.makeVisible
+import com.forest.bss.sdk.toast.SnackBarExt
 import com.forest.bss.sdk.toast.ToastExt
 import com.v2ray.ang.R
 import com.v2ray.ang.custom.data.entity.UpdateBean
@@ -31,12 +38,37 @@ class DownloadDialog : AbsDialogFragment() {
         val intentData = arguments?.getString(INTENT_DATA)?.asType<UpdateBean>()
         binding?.content?.text = intentData?.update_detail
 
+        if (intentData?.update_type == "强制更新") {
+            binding?.cancel?.makeGone()
+        } else {
+            binding?.cancel?.makeVisible()
+        }
+
         binding?.cancel?.setOnClickListener {
             dismissAllowingStateLoss()
         }
 
         binding?.down?.setOnClickListener {
-            ToastExt.show("下载")
+            openBrowser(requireContext(), intentData?.download_url)
+        }
+    }
+
+    /**
+     * 调用第三方浏览器打开
+     * @param context
+     * @param url 要浏览的资源地址
+     */
+    fun openBrowser(context: Context, url: String?) {
+        val intent = Intent()
+        intent.action = Intent.ACTION_VIEW
+        intent.data = Uri.parse(url)
+        // 注意此处的判断intent.resolveActivity()可以返回显示该Intent的Activity对应的组件名
+        if (intent.resolveActivity(context.packageManager) != null) {
+            val componentName: ComponentName = intent.resolveActivity(context.packageManager)
+            // 打印Log   ComponentName到底是什么
+            context.startActivity(Intent.createChooser(intent, "请选择浏览器"))
+        } else {
+            binding?.content?.let { SnackBarExt.show(it, "请先下载浏览器") }
         }
     }
 

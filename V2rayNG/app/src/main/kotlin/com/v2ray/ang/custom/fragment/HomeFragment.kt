@@ -26,9 +26,11 @@ import com.v2ray.ang.custom.activity.LoginActivity
 import com.v2ray.ang.custom.activity.MainActivity
 import com.v2ray.ang.custom.data.entity.HomeBean
 import com.v2ray.ang.custom.data.model.HomeModel
+import com.v2ray.ang.custom.data.model.MineModel
 import com.v2ray.ang.custom.dataStore.UserInfoDataStore
 import com.v2ray.ang.custom.dialog.BottomShellDialogFragment
 import com.v2ray.ang.custom.dialog.CommonDialog
+import com.v2ray.ang.custom.dialog.DownloadDialog
 import com.v2ray.ang.custom.dialog.LoadingUtils
 import com.v2ray.ang.custom.webSocket.ConnectUtils
 import com.v2ray.ang.custom.webSocket.ConnectUtils.connectAppSend
@@ -55,6 +57,8 @@ class HomeFragment : BaseFragment() {
     private val homeModel by lazy { viewModel<HomeModel>() }
 
     private val mainViewModel: MainViewModel? by viewModels()
+
+    private val mimeModel by lazy { viewModel<MineModel>() }
 
     private var binding: CustomFragmentHomeBinding? = null
 
@@ -92,6 +96,8 @@ class HomeFragment : BaseFragment() {
 
     override fun bindingView(rootView: View?) {
         homeModel?.getInfo()
+
+        mimeModel?.checkUpdate()
 
         mainViewModel?.startListenBroadcast()
 
@@ -205,6 +211,15 @@ class HomeFragment : BaseFragment() {
                 alreadyLoaded()
             } else {
                 stopLoaded()
+            }
+        }
+        mimeModel?.liveDataCheckUpdate?.observe(requireActivity()) {
+            if (it.success()) {
+                it.getOrNull()?.results?.apply {
+                    if (!this.has_update) {
+                        DownloadDialog.newInstance(this).showDialogSafely(parentFragmentManager)
+                    }
+                }
             }
         }
     }
